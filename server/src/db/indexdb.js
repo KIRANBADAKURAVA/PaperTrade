@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const connectDB = async () => {
     try {
       
-        console.log("Mongo URI:", process.env.MONGODB_ID);
+        //console.log("Mongo URI:", process.env.MONGODB_ID);
 
         const connection = await mongoose.connect(process.env.MONGODB_ID, {
             dbName: "TradeDatabase",
