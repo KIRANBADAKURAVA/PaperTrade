@@ -10,14 +10,14 @@ import Position from '../Models/Position.model.js';
 
 const createTrade = AsyncHandler(async (req, res) => {
     const userId = req.user._id;
-    console.log(userId);
+   // console.log(userId);
     const { symbol, quantity, price, action } = req.body;
     const user = await User.findById(userId);
     if (!user) {
         throw new ApiError(404, 'User not found');
     }   
     const account = await Account.findOne({ userId });
-    console.log(account.balance);
+   // console.log(account.balance);
     if (!account) {
         throw new ApiError(404, 'Account not found');
     }
@@ -35,7 +35,7 @@ const createTrade = AsyncHandler(async (req, res) => {
             position.quantity += quantity;
             await position.save();
         } else {
-            console.log(account._id, symbol, quantity);
+           // console.log(account._id, symbol, quantity);
             await Position.create({ accountId: account._id, symbol, quantity });
         }
     }else if(action === 'sell') {
