@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { TrendingUp, TrendingDown } from 'lucide-react';
+import Header, { selectedSymbolRef } from './Components/Header';
 import Chart from './Components/Chart';
-import Header from './Components/Header.jsx';
-import { selectedSymbolRef } from './Components/Header.jsx';
+import TradeModal from './Components/TradeModal';
+import Toast from './Components/Toast';
 import './App.css';
 
 const watchlistItems = [
-  { symbol: 'BTCUSD', binanceSymbol: 'btcusdt', color: 'green' },
-  { symbol: 'ETHUSD', binanceSymbol: 'ethusdt', color: 'green' },
-  { symbol: 'BNBUSD', binanceSymbol: 'bnbusdt', color: 'green' },
-  { symbol: 'XRPUSD', binanceSymbol: 'xrpusdt', color: 'green' },
-  { symbol: 'SOLUSD', binanceSymbol: 'solusdt', color: 'green' },
-  { symbol: 'DOGEUSD', binanceSymbol: 'dogeusdt', color: 'green' },
-  { symbol: 'ADAUSD', binanceSymbol: 'adausdt', color: 'green' },
-  { symbol: 'AVAXUSD', binanceSymbol: 'avaxusdt', color: 'green' },
+  { symbol: 'BTCUSD', binanceSymbol: 'btcusdt' },
+  { symbol: 'ETHUSD', binanceSymbol: 'ethusdt' },
+  { symbol: 'BNBUSD', binanceSymbol: 'bnbusdt' },
+  { symbol: 'XRPUSD', binanceSymbol: 'xrpusdt' },
+  { symbol: 'SOLUSD', binanceSymbol: 'solusdt' },
+  { symbol: 'DOGEUSD', binanceSymbol: 'dogeusdt' },
+  { symbol: 'ADAUSD', binanceSymbol: 'adausdt' },
+  { symbol: 'AVAXUSD', binanceSymbol: 'avaxusdt' },
 ];
 
 const trackedSymbols = watchlistItems.map(item => item.binanceSymbol);
@@ -22,8 +23,9 @@ const App = () => {
   const [currentSymbol, setCurrentSymbol] = useState(selectedSymbolRef.current);
   const [livePrices, setLivePrices] = useState({});
   const [priceChanges, setPriceChanges] = useState({});
+  const [isTradeOpen, setIsTradeOpen] = useState(false);
+  const [toastVisible, setToastVisible] = useState(false);
 
-  // Fetch live prices and 24h changes
   useEffect(() => {
     const fetchMarketData = async () => {
       try {
@@ -49,30 +51,28 @@ const App = () => {
     };
 
     fetchMarketData();
-    const interval = setInterval(fetchMarketData, 10000); // refresh every 10s
-
+    const interval = setInterval(fetchMarketData, 10000);
     return () => clearInterval(interval);
   }, []);
 
-  // Watch for symbol change
   useEffect(() => {
     const interval = setInterval(() => {
       if (selectedSymbolRef.current !== currentSymbol) {
         setCurrentSymbol(selectedSymbolRef.current);
-        console.log('Symbol changed:', selectedSymbolRef.current);
       }
     }, 500);
     return () => clearInterval(interval);
   }, [currentSymbol]);
 
   return (
-    <div className="bg-gray-900 text-white min-h-screen font-sans flex flex-col">
+    <div className="bg-gray-900 text-white h-screen flex flex-col overflow-hidden">
       <Header />
 
-      <main className="flex-grow p-6 overflow-hidden flex">
-        {/* Market Summary (Top Coins) */}
-        <div className="flex-grow mr-4">
+      <main className="flex-grow flex overflow-hidden p-4">
+        {/* Market Overview */}
+        <div className="flex-grow mr-4 flex flex-col overflow-hidden">
           <h2 className="text-2xl font-semibold mb-6 text-blue-400">Crypto Market Summary</h2>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             {watchlistItems.slice(0, 4).map((item) => {
               const price = livePrices[item.binanceSymbol];
@@ -96,12 +96,30 @@ const App = () => {
             })}
           </div>
 
+          {/* Trade Actions */}
+          <div className="flex justify-end mb-4 space-x-4">
+            <button
+              onClick={() => setIsTradeOpen(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition"
+            >
+              Trade
+            </button>
+            <button
+              onClick={() => console.log('Transaction List clicked')}
+              className="bg-fuchsia-600 hover:bg-fuchsia-700 text-white px-4 py-2 rounded-lg shadow transition"
+            >
+              Transaction List
+            </button>
+          </div>
+
           {/* Live Chart */}
-          <Chart symbol={currentSymbol} />
+          <div className="bg-gray-800 p-4 rounded-lg shadow-lg flex-grow overflow-hidden">
+            <Chart symbol={currentSymbol} />
+          </div>
         </div>
 
-        {/* Watchlist */}
-        <aside className="w-64 bg-gray-800 p-4 rounded-lg overflow-y-auto">
+        {/* Watchlist Sidebar */}
+        <aside className="w-64 bg-gray-800 p-4 rounded-lg overflow-y-auto max-h-[calc(100vh-100px)]">
           <h3 className="text-xl font-semibold mb-4 text-blue-400">Watchlist</h3>
           <ul className="space-y-2">
             {watchlistItems.map((item) => {
@@ -115,13 +133,9 @@ const App = () => {
                   key={item.symbol}
                   onClick={() => {
                     setCurrentSymbol(item.binanceSymbol);
-                    selectedSymbolRef.current = item.binanceSymbol; // update global ref
-                  }
-}
-                  style={{ cursor: 'pointer' }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#1F2937')}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '')}
-                  className="flex justify-between items-center p-2 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors duration-200"
+                    selectedSymbolRef.current = item.binanceSymbol;
+                  }}
+                  className="flex justify-between items-center p-2 bg-gray-700 rounded-lg hover:bg-gray-600 cursor-pointer"
                 >
                   <div>
                     <span className="font-medium">{item.symbol}</span>
@@ -139,6 +153,19 @@ const App = () => {
           </ul>
         </aside>
       </main>
+
+      {/* Trade Modal */}
+      <TradeModal
+        isOpen={isTradeOpen}
+        onClose={() => setIsTradeOpen(false)}
+        onSuccess={() => setToastVisible(true)}
+        symbol={currentSymbol}
+      />
+
+      {/* Toast */}
+      {toastVisible && (
+        <Toast message="Trade submitted successfully!" onClose={() => setToastVisible(false)} />
+      )}
     </div>
   );
 };

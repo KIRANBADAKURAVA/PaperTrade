@@ -36,9 +36,8 @@ export default function Chart({ symbol = 'btcusdt' }) {
   }, [socketSymbol]);
 
   return (
-    <div className="bg-gray-800 p-4 rounded-lg shadow-lg h-64 sm:h-96">
-      <h2 className="text-lg font-semibold mb-2 text-blue-400">Live Chart</h2>
-      <p className="text-gray-400 mb-4">{symbol.toUpperCase()}</p>
+    <div className="bg-grey-800 p-4 rounded-lg shadow-lg h-64 sm:h-96">
+      
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data}>
           <XAxis dataKey="time" stroke="#6B7280" />
