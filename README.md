@@ -1,8 +1,5 @@
-from pathlib import Path
 
-# Define the content of the README.md file
-readme_content = """
-# PaperTrade
+## PaperTrade
 
 A paper trading platform with integrated machine learning models.
 
@@ -38,7 +35,26 @@ Ensure you have the following installed:
 - Node.js
 - npm or yarn
 - MongoDB (if persistence is enabled)
-- Python (if ML models run separately)
+
+
+### Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/KIRANBADAKURAVA/PaperTrade.git
+   cd PaperTrade
+
+2. Install server dependencies:
+   ```bash
+    cd server
+    npm install
+
+3. Install client dependencies:
+    ```bash
+   cd ../client
+   npm install
+
 
 
 
