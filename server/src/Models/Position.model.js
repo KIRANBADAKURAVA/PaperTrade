@@ -1,11 +1,52 @@
 import mongoose from 'mongoose';
 
 const positionSchema = new mongoose.Schema({
-  accountId:   { type: mongoose.Schema.Types.ObjectId, ref: 'Account', required: true },
-  symbol:      { type: String, required: true },
-  quantity:    { type: Number, required: true },
-  lastUpdated: { type: Date, default: Date.now }
+  accountId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Account',
+    required: true
+  },
+  symbol: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  quantity: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+  tradeType: {
+    type: String,
+    enum: ['long', 'short'],
+    default: 'long'
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'open', 'closed'],
+    default: 'open'
+  },
+  entryPrice: {
+    type: Number,
+    min: 0,
+    required: true
+  },
+  exitPrice: {
+    type: Number,
+    min: 0
+  },
+  profitLoss: {
+    type: Number,
+    default: 0
+  },
+  notes: {
+    type: String,
+    trim: true
+  }
+}, {
+  timestamps: true // adds createdAt and updatedAt fields
 });
 
 const Position = mongoose.model('Position', positionSchema);
+
 export default Position;

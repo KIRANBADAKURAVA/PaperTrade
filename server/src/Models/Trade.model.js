@@ -7,6 +7,7 @@ const tradeSchema = new mongoose.Schema({
   quantity:  { type: Number, required: true },
   price:     { type: Number, required: true },
   orderType: { type: String, enum: ['market', 'limit'], default: 'market' },
+  tradeType: { type: String, enum: ['long', 'short'], default: 'long' },
   status:    { type: String, enum: ['executed', 'cancelled', 'pending'], default: 'executed' },
   timestamp: { type: Date, default: Date.now }
 });

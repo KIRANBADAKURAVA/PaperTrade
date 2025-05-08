@@ -26,11 +26,15 @@ const AccessandRefreshTokenGenerater= async(userid)=>{
 // Regisister a new user 
 const registerUser = AsyncHandler(async (req, res) => {
     const { username, email, password } = req.body;
+
+    if (!email || !password) {
+        throw new ApiError(400, "Email and password are required");
+    }
     
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-        return new ApiError(400, "User already exists");
+        throw new ApiError(400, "User already exists");
     }
 
     const user = new User({ username, email, password });
@@ -44,74 +48,105 @@ const registerUser = AsyncHandler(async (req, res) => {
     await account.save();
 
 
-    return new ApiResponse(201, "User registered successfully", {
-        user: {
-            _id: user._id,
-            username: user.username,
-            email: user.email,
-        },
-        account: {
-            _id: account._id,
-            balance: account.balance,
-        }
-    }, );
+    return res.status(201).json(
+        new ApiResponse(201, {
+            user: {
+                _id: user._id,
+                username: user.username,
+                email: user.email,
+            },
+            account: {
+                _id: account._id,
+                balance: account.balance,
+            }
+        }, 'User registered successfully')
+    );
 });
 
+    
 // Login user
+
 const loginUser = AsyncHandler(async (req, res) => {
     const { email, password } = req.body;
     console.log(email, password);
     // Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
-        return new ApiError(401, "Invalid email or password");
+        throw new ApiError(401, "Invalid email or password");
     }
-    console.log(user);
+   // console.log(user);
     
     // Check if password is correct
     const isPasswordCorrect = await user.isPasswordCorrect(password);
     if (!isPasswordCorrect) {
-        return new ApiError(401, "Invalid email or password");
+        throw new ApiError(401, "Invalid email or password");
     }
     const {accessToken,refreshToken} = await AccessandRefreshTokenGenerater(user._id)
     
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
-
+    const account = await Account.findOne({ userId: user._id })
+    if(!account) {
+        throw new ApiError(404, "Account not found");
+    }
     // Set cookie options
     const options = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "Strict",
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     };
 
 
-    return res.cookie('accessToken',accessToken,options).cookie('refreshToken',refreshToken,options)
-              .json( 
-                new ApiResponse(200,
-                  {
-                    user : {loggedInUser, refreshToken, accessToken}
-                  },
-                  'User logged succesfully'
-                )
-              )
+    return res.status(200).cookie("refreshToken", refreshToken, options).json(
+        new ApiResponse(200, {
+            user: loggedInUser,
+            account: account,
+            accessToken,
+            refreshToken,
+        }, 'User logged in successfully')
+    );
 }
 );
 
 // Logout user
 const logoutUser = AsyncHandler(async (req, res) => {
     await User.findByIdAndUpdate(req.user._id, { $unset: { refreshToken: 1 } });
-    return new ApiResponse(200, "User logged out successfully").send(res);
+    return res.status(200).clearCookie("refreshToken").json(
+        new ApiResponse(200, "User logged out successfully")
+    );
 }
 );
 
 // Get user profile 
 const getUserProfile = AsyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id).select("-password -refreshToken");
-    return new ApiResponse(200, "User profile", user).send(res);
+    if (!user) {
+        return new ApiError(404, "User not found");
+    }
+    const account = await Account.findOne({ userId: user._id });
+    if (!account) {
+        return new ApiError(404, "Account not found");
+    }
+
+
+    return res.status(200).json(
+        new ApiResponse(200, {
+            user,
+            account,
+        }, "User profile fetched successfully")
+    );
+}
+);  
+
+// get account balance
+const getAccountBalance = AsyncHandler(async (req, res) => {
+    console.log(req.user._id);
+    const account = await Account.findOne({ userId: req.user._id });
+    if (!account) {
+        return new ApiError(404, "Account not found");
+    }
+    return res.status(200).json(
+        new ApiResponse(200, account.balance, "Account balance fetched successfully")
+    );
 }
 );
-
 // Update user profile
 const updateUserProfile = AsyncHandler(async (req, res) => {
     const { username, email } = req.body;
@@ -121,7 +156,9 @@ const updateUserProfile = AsyncHandler(async (req, res) => {
         { username, email },
         { new: true, runValidators: true }
     ).select("-password -refreshToken");
-    return new ApiResponse(200, "User profile updated", user).send(res);
+    return res.status(200).json(
+        new ApiResponse(200, user, "User profile updated successfully")
+    );
 }
 );
 // Update user password
@@ -137,7 +174,9 @@ const updateUserPassword = AsyncHandler(async (req, res) => {
     }
     user.password = newPassword;
     await user.save();
-    return new ApiResponse(200, "User password updated").send(res);
+    return res.status(200).json(
+        new ApiResponse(200, "Password updated successfully")
+    );
 }
 );
 // Delete user account
@@ -147,7 +186,11 @@ const deleteUserAccount = AsyncHandler(async (req, res) => {
     if (!user) {
         return new ApiError(404, "User not found");
     }
-    return new ApiResponse(200, "User account deleted").send(res);
+    return res.status(200).json(    
+            
+            new ApiResponse(200, "User account deleted successfully")
+        );
+
 }
 );
 
@@ -176,5 +219,6 @@ export {
     updateUserProfile,
     updateUserPassword,
     deleteUserAccount,
-    refreshToken
+    refreshToken,
+    getAccountBalance
 };

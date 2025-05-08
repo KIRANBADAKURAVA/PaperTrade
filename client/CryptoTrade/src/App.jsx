@@ -27,6 +27,7 @@ const App = () => {
   const [toastVisible, setToastVisible] = useState(false);
 
   useEffect(() => {
+
     const fetchMarketData = async () => {
       try {
         const res = await fetch('https://api.binance.com/api/v3/ticker/24hr');
@@ -104,12 +105,6 @@ const App = () => {
             >
               Trade
             </button>
-            <button
-              onClick={() => console.log('Transaction List clicked')}
-              className="bg-fuchsia-600 hover:bg-fuchsia-700 text-white px-4 py-2 rounded-lg shadow transition"
-            >
-              Transaction List
-            </button>
           </div>
 
           {/* Live Chart */}
@@ -160,6 +155,7 @@ const App = () => {
         onClose={() => setIsTradeOpen(false)}
         onSuccess={() => setToastVisible(true)}
         symbol={currentSymbol}
+        
       />
 
       {/* Toast */}

@@ -2,7 +2,8 @@ import app from './app.js';
 import connectDB from './db/indexdb.js';
 import dotenv from 'dotenv';
 
-dotenv.config(); // ✅ No path needed if .env is in root
+dotenv.config(); 
+
 
 
 const PORT = process.env.PORT || 3000;
