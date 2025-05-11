@@ -26,6 +26,7 @@ const createTrade = AsyncHandler(async (req, res) => {
 
     account.balance -= totalCost;
     await account.save({ validateBeforeSave: false });
+    console.log('while crating', price)
 
     await Position.create({
       accountId: account._id,
@@ -38,6 +39,11 @@ const createTrade = AsyncHandler(async (req, res) => {
     });
 
   } else if (action === 'sell') {
+    const totalCost = price * quantity;
+
+    if (account.balance < totalCost) {
+      throw new ApiError(400, 'Insufficient balance');
+    }
     await Position.create({
       accountId: account._id,
       symbol,
@@ -106,13 +112,16 @@ const getTradesByStatus = AsyncHandler(async (req, res) => {
     new ApiResponse(200, positions, `${status.charAt(0).toUpperCase() + status.slice(1)} positions fetched successfully`)
   );
 });
+
+
 const closeTrade = AsyncHandler(async (req, res) => {
   const  positionId  = req.params.id;
   console.log(req.params);
   if(!positionId) throw new ApiError(400, 'Position ID is required');
   
   const { price } = req.body;
-
+  if(price<0) console.log('negative')
+  console.log('current price',price)
   // Fetch the position that needs to be closed
   const position = await Position.findById(positionId);
   if (!position) throw new ApiError(404, 'Position not found');
@@ -129,6 +138,7 @@ const closeTrade = AsyncHandler(async (req, res) => {
   // Calculate the Profit and Loss (PnL)
   let profitLoss = 0;
   if (position.tradeType === 'long') {
+    console.log('entry price' ,position.entryPrice)
     // For a long trade, PnL = (Exit Price - Entry Price) * Quantity
     profitLoss = (price - position.entryPrice) * position.quantity;
   } else if (position.tradeType === 'short') {
@@ -140,9 +150,10 @@ const closeTrade = AsyncHandler(async (req, res) => {
   position.status = 'closed';
   position.exitPrice = price;
   position.profitLoss = profitLoss;
-
+  console.log(profitLoss);
   // Save the position and account
   await position.save({ validateBeforeSave: false });
+  
   account.balance += profitLoss; // Update the account balance with the PnL
   await account.save({ validateBeforeSave: false });
 

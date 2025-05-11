@@ -72,6 +72,10 @@ const TradeModal = ({ isOpen, onClose, onSuccess, symbol }) => {
         body: JSON.stringify(tradeData),
       });
 
+      if (response.status === 400) {
+        alert('Insufficient balance');
+        return;
+      }
       const result = await response.json();
 
       if (!response.ok) {

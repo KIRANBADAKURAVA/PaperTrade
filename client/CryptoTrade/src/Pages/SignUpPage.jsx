@@ -21,7 +21,9 @@ const SignUpPage = () => {
         body: JSON.stringify({ username, email, password }),
       });
 
+      if(response.status==400) alert('Email already used.');
       const data = await response.json();
+
       if (data.success) {
         alert('Signup successful! Please log in.');
         navigate('/login');

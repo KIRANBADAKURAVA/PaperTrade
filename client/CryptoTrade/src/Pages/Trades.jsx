@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Trades = () => {
   const [activeTab, setActiveTab] = useState('open');
   const [loading, setLoading] = useState(false);
   const [trades, setTrades] = useState([]);
   const [livePrices, setLivePrices] = useState({});
-  const [balance, setBalance] = useState(null);
   const accessToken = localStorage.getItem('accessToken');
+  const navigate = useNavigate();
 
   const tabClass = (tab) =>
     `px-4 py-2 rounded-t-lg transition-all duration-200 font-medium ${
@@ -37,19 +38,6 @@ const Trades = () => {
     }
   };
 
-  // const fetchBalance = async () => {
-  //   try {
-  //     const res = await fetch(`http://localhost:8000/api/v1/user/balance`, {
-  //       headers: { Authorization: `Bearer ${accessToken}` },
-  //     });
-  //     if (!res.ok) throw new Error('Failed to fetch balance');
-  //     const data = await res.json();
-  //     setBalance(data.balance); // Adjust this if your API returns a different structure
-  //   } catch (err) {
-  //     console.error('Error fetching balance:', err.message);
-  //   }
-  // };
-
   const closeTrade = async (tradeId, price) => {
     console.log('Closing trade:', tradeId, 'at price:', price);
     try {
@@ -63,15 +51,10 @@ const Trades = () => {
       });
       if (!res.ok) throw new Error('Failed to close trade');
       fetchTrades('open');
-      fetchBalance(); // Refresh balance after closing a trade
     } catch (err) {
       console.error('Error closing trade:', err.message);
     }
   };
-
-  useEffect(() => {
-    fetchBalance();
-  }, []);
 
   useEffect(() => {
     if (activeTab !== 'open' || trades.length === 0) return;
@@ -105,13 +88,17 @@ const Trades = () => {
   }, [activeTab]);
 
   const renderTradeItem = (trade, showClose = false) => {
+    //console.log('Rendering trade:', trade);
+
     const livePrice = livePrices[trade._id];
+  //  console.log('Live price:', livePrice);
     const entry = trade.entryPrice;
     const qty = trade.quantity;
     const isLong = trade.tradeType === 'LONG';
 
+    
     const pnl = livePrice
-      ? (isLong ? (livePrice - entry) : (entry - livePrice)) * qty
+      ? (isLong ? -(livePrice - entry) : -(entry - livePrice)) * qty
       : null;
 
     const pnlClass = pnl > 0
@@ -157,12 +144,15 @@ const Trades = () => {
 
   return (
     <div className="bg-gray-900 text-white min-h-screen p-6">
+      <button
+        onClick={() => navigate('/')}
+        className="mb-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
+      >
+        Home
+      </button>
+
       <h1 className="text-3xl font-bold text-blue-400 mb-2">My Trades</h1>
-      {balance !== null && (
-        <p className="text-gray-300 text-lg mb-6">
-          Account Balance: <span className="text-green-400 font-semibold">${balance.toFixed(2)}</span>
-        </p>
-      )}
+
 
       <div className="bg-gray-800 rounded-lg shadow-lg">
         <div className="flex space-x-2 border-b border-gray-700 px-4 pt-4">
