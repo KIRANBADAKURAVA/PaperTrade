@@ -1,13 +1,17 @@
 import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
+import dotenv from 'dotenv';
+
+dotenv.config(); 
 
 const app = express()
 
 // cors 
 
+console.log(process.env.CORS_ORIGIN)
 const corsOptions = {
-  origin: 'http://localhost:5173', // your frontend URL
+  origin: process.env.CORS_ORIGIN, // your frontend URL
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
