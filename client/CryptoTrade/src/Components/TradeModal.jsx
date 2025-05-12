@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
+
 const TradeModal = ({ isOpen, onClose, onSuccess, symbol }) => {
   const [price, setPrice] = useState('');
   const [lastPrice, setLastPrice] = useState(null);
@@ -68,7 +69,7 @@ const TradeModal = ({ isOpen, onClose, onSuccess, symbol }) => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${accessToken}`,
         },
-        credentials: 'include',
+        
         body: JSON.stringify(tradeData),
       });
 
@@ -77,7 +78,8 @@ const TradeModal = ({ isOpen, onClose, onSuccess, symbol }) => {
         return;
       }
       const result = await response.json();
-
+      navigate('/')
+      
       if (!response.ok) {
         throw new Error(result.message || 'Trade failed');
       }

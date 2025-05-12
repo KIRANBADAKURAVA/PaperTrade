@@ -26,7 +26,6 @@ export default function Header() {
     try {
       const response = await fetch('http://localhost:8000/api/v1/user/logout', {
         method: 'POST',
-        credentials: 'include',
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },

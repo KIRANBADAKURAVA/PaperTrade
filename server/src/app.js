@@ -9,15 +9,15 @@ const app = express()
 
 // cors 
 
-console.log(process.env.CORS_ORIGIN)
+console.log( process.env.CORS_ORIGIN)
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN, // your frontend URL
+  origin: process.env.CORS_ORIGIN,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+  allowedHeaders: ['Content-Type', 'Authorization']
 };
 
-app.use(cors(corsOptions)); // Use CORS middleware with the options
+
+app.use(cors(corsOptions)); 
 
 // Parse incoming requests with JSON payloads and limit size
 app.use(express.json({
