@@ -38,13 +38,9 @@ const positionSchema = new mongoose.Schema({
   profitLoss: {
     type: Number,
     default: 0
-  },
-  notes: {
-    type: String,
-    trim: true
   }
 }, {
-  timestamps: true // adds createdAt and updatedAt fields
+  timestamps: true 
 });
 
 const Position = mongoose.model('Position', positionSchema);

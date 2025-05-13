@@ -12,10 +12,13 @@ PaperTrade is a simulated trading platform that allows users to experience tradi
 - **`client/`** – Frontend application (React) for user interaction.
 - **`server/`** – Backend (Node.js/Express) with logic for trading simulation and ML model handling.
 
+## Databse Model
+
+![alt text](<Trade data base.png>)
+
 ## 🚀 Features
 
 - Paper trading with no real money involved
-- Machine learning integration for prediction
 - Historical data analysis
 - Modern UI/UX with React
 
@@ -25,6 +28,8 @@ PaperTrade is a simulated trading platform that allows users to experience tradi
 - **Backend**: Node.js, Express
 - **Database**: MongoDB 
 - **Tools**: Git, Postman, VS Code
+
+
 
 ## 🔧 Getting Started
 
