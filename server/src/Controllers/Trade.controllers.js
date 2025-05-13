@@ -179,6 +179,15 @@ const closeTrade = AsyncHandler(async (req, res) => {
   // Return a response with the updated account and trade info
   return res.status(200).json(
     new ApiResponse(200, {
+      position: {
+        _id: position._id,
+        symbol: position.symbol,
+        quantity: position.quantity,
+        entryPrice: position.entryPrice,
+        exitPrice: price,
+        profitLoss,
+        status: 'closed',
+      },
       trade: {
         _id: trade._id,
         symbol: trade.symbol,

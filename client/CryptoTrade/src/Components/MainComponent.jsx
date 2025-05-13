@@ -30,6 +30,7 @@ const watchlistItems = [
    const [isTradeOpen, setIsTradeOpen] = useState(false);
    const [toastVisible, setToastVisible] = useState(false);
 
+
    useEffect(() => {
       
         const fetchMarketData = async () => {
@@ -97,7 +98,7 @@ const watchlistItems = [
               onClick={() => setIsTradeOpen(true)}
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition"
             >
-              Trade {currentSymbol}
+              Trade {currentSymbol.toUpperCase()}
             </button>
           </div>
 

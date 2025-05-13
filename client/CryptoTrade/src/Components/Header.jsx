@@ -5,7 +5,9 @@ import { logout } from '../Store/authSlice.js';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 
-const selectedSymbolRef = { current: 'btcusdt' }; // default
+const selectedSymbolRef = { current: 'btcusdt',
+                            func: ()=>{}
+ }; // default
 
 export default function Header() {
   const [symbols, setSymbols] = useState([]);
@@ -64,6 +66,7 @@ export default function Header() {
       }
     };
     fetchData();
+    selectedSymbolRef.func = fetchData;
   }, []);
 
   useEffect(() => {
@@ -203,3 +206,4 @@ export default function Header() {
 }
 
 export { selectedSymbolRef };
+

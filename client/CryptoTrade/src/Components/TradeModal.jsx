@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import  { selectedSymbolRef } from './Header';
+
 
 
 const TradeModal = ({ isOpen, onClose, onSuccess, symbol }) => {
@@ -78,7 +80,8 @@ const TradeModal = ({ isOpen, onClose, onSuccess, symbol }) => {
         return;
       }
       const result = await response.json();
-      navigate('/')
+  
+      selectedSymbolRef.func()
       
       if (!response.ok) {
         throw new Error(result.message || 'Trade failed');

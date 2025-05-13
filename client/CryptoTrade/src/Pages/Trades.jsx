@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Trades = () => {
@@ -8,6 +8,7 @@ const Trades = () => {
   const [livePrices, setLivePrices] = useState({});
   const accessToken = localStorage.getItem('accessToken');
   const navigate = useNavigate();
+  const sockets = useRef({});
 
   const tabClass = (tab) =>
     `px-4 py-2 rounded-t-lg transition-all duration-200 font-medium ${
@@ -39,7 +40,6 @@ const Trades = () => {
   };
 
   const closeTrade = async (tradeId, price) => {
-    console.log('Closing trade:', tradeId, 'at price:', price);
     try {
       const res = await fetch(`http://localhost:8000/api/v1/trade/close/${tradeId}`, {
         method: 'POST',
@@ -57,54 +57,59 @@ const Trades = () => {
   };
 
   useEffect(() => {
-    if (activeTab !== 'open' || trades.length === 0) return;
-
-    const sockets = {};
-
-    trades.forEach((trade) => {
-      const symbol = trade.symbol.toLowerCase();
-      const ws = new WebSocket(`wss://fstream.binance.com/ws/${symbol}@aggTrade`);
-
-      ws.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        const price = parseFloat(data.p);
-        setLivePrices((prev) => ({ ...prev, [trade._id]: price }));
-      };
-
-      ws.onerror = (error) => {
-        console.error(`WebSocket error for ${symbol}`, error);
-      };
-
-      sockets[trade._id] = ws;
-    });
-
-    return () => {
-      Object.values(sockets).forEach((ws) => ws.close());
-    };
-  }, [trades, activeTab]);
-
-  useEffect(() => {
     fetchTrades(activeTab);
   }, [activeTab]);
 
-  const renderTradeItem = (trade, showClose = false) => {
-    //console.log('Rendering trade:', trade);
+  useEffect(() => {
+    if (activeTab !== 'open' || trades.length === 0) return;
 
-    const livePrice = livePrices[trade._id];
-  //  console.log('Live price:', livePrice);
-    const entry = trade.entryPrice;
-    const qty = trade.quantity;
-    const isLong = trade.tradeType === 'LONG';
+    trades.forEach((trade) => {
+      const symbol = trade.symbol.toLowerCase();
+      if (!sockets.current[trade._id]) {
+        const ws = new WebSocket(`wss://fstream.binance.com/ws/${symbol}@aggTrade`);
 
-    
-    const pnl = livePrice
-      ? (isLong ? -(livePrice - entry) : -(entry - livePrice)) * qty
-      : null;
+        ws.onmessage = (event) => {
+          const data = JSON.parse(event.data);
+          const price = parseFloat(data.p);
+          setLivePrices((prev) => ({ ...prev, [trade._id]: price }));
+        };
 
-    const pnlClass = pnl > 0
-      ? 'text-green-400'
-      : pnl < 0
-      ? 'text-red-500'
+        ws.onerror = (error) => {
+          console.error(`WebSocket error for ${symbol}`, error);
+        };
+
+        sockets.current[trade._id] = ws;
+      }
+    });
+
+    return () => {
+      Object.values(sockets.current).forEach((ws) => ws.close());
+      sockets.current = {};
+    };
+  }, [trades, activeTab]);
+
+  const renderTradeItem = (trade, showLive = false) => {
+    const entry = parseFloat(trade.entryPrice);
+    const qty = parseFloat(trade.quantity);
+    const isLong = trade.tradeType.toUpperCase() === 'LONG';
+    const symbol = trade.symbol.toLowerCase();
+
+    let price = null;
+    let pnl = null;
+
+    if (showLive) {
+      price = livePrices[trade._id];
+      if (price !== undefined) {
+        pnl = (isLong ? price - entry : entry - price) * qty;
+      }
+    } else if (activeTab === 'closed') {
+      price = parseFloat(trade.exitPrice);
+      pnl = parseFloat(trade.profitLoss);
+    }
+
+    const pnlClass =
+      pnl > 0 ? 'text-green-400'
+      : pnl < 0 ? 'text-red-500'
       : 'text-gray-300';
 
     return (
@@ -114,24 +119,37 @@ const Trades = () => {
       >
         <div className="flex justify-between items-center">
           <div>
-            <p className="text-blue-400 text-lg font-semibold">{trade.symbol}</p>
+            <p className="text-blue-400 text-lg font-semibold">{symbol}</p>
             <p className="text-gray-400">Quantity: {qty}</p>
             <p className="text-gray-400">Entry Price: ${entry}</p>
             <p className="text-gray-400">Trade Type: {trade.tradeType}</p>
-            {showClose && (
+
+            {activeTab === 'open' && (
               <>
                 <p className="text-yellow-400">
-                  Live Price: ${livePrice?.toFixed(2) || 'Loading...'}
+                  Live Price: ${price?.toFixed(4) || 'Loading...'}
                 </p>
                 <p className={`font-semibold ${pnlClass}`}>
                   PnL: {pnl !== null ? `$${pnl.toFixed(2)}` : 'Calculating...'}
                 </p>
               </>
             )}
+
+            {activeTab === 'closed' && (
+              <>
+                <p className="text-yellow-400">
+                  Exit Price: ${price?.toFixed(4)}
+                </p>
+                <p className={`font-semibold ${pnlClass}`}>
+                  Final PnL: ${pnl?.toFixed(2)}
+                </p>
+              </>
+            )}
           </div>
-          {showClose && livePrice && (
+
+          {activeTab === 'open' && price && (
             <button
-              onClick={() => closeTrade(trade._id, livePrice)}
+              onClick={() => closeTrade(trade._id, price)}
               className="ml-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition"
             >
               Close
@@ -153,7 +171,6 @@ const Trades = () => {
 
       <h1 className="text-3xl font-bold text-blue-400 mb-2">My Trades</h1>
 
-
       <div className="bg-gray-800 rounded-lg shadow-lg">
         <div className="flex space-x-2 border-b border-gray-700 px-4 pt-4">
           {['open', 'closed', 'pending'].map((tab) => (
@@ -173,9 +190,7 @@ const Trades = () => {
                 <p className="text-gray-400">No {activeTab} trades found.</p>
               ) : (
                 <ul>
-                  {trades.map((trade) =>
-                    renderTradeItem(trade, activeTab === 'open')
-                  )}
+                  {trades.map((trade) => renderTradeItem(trade, activeTab === 'open'))}
                 </ul>
               )}
             </>
