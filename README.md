@@ -14,7 +14,7 @@ PaperTrade is a simulated trading platform that allows users to experience tradi
 
 ## Databse Model
 
-![alt text](<Trade data base.png>)
+![alt text](<Trade database.png>)
 
 ## 🚀 Features
 
