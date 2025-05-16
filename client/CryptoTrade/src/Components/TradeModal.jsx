@@ -81,7 +81,7 @@ const TradeModal = ({ isOpen, onClose, onSuccess, symbol }) => {
       }
       const result = await response.json();
   
-      selectedSymbolRef.func()
+      
       
       if (!response.ok) {
         throw new Error(result.message || 'Trade failed');

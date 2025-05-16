@@ -9,6 +9,7 @@ import { ApiResponse } from '../Utils/ApiResponse.js';
 
 const createTrade = AsyncHandler(async (req, res) => {
   const userId = req.user._id;
+  console.log(req.body);
   const { symbol, quantity, price, action } = req.body;
 
   const user = await User.findById(userId);
