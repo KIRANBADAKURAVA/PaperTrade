@@ -1,17 +1,13 @@
-import React from "react";
-import { useState, useEffect  } from "react";
-import  { selectedSymbolRef } from './Header';
+import React, { useState, useEffect } from "react";
+import { selectedSymbolRef } from './Header';
 import Chart from "./Chart";
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { TrendingUp, TrendingDown, MessageCircle } from 'lucide-react';
 import TradeModal from "./TradeModal";
-import Toast from './Toast'
+import Toast from './Toast';
+import ChatBot from './ChatBot';
 
-
-
-export default function MainComponent(){
-
-    
-const watchlistItems = [
+export default function MainComponent() {
+  const watchlistItems = [
     { symbol: 'BTCUSD', binanceSymbol: 'btcusdt' },
     { symbol: 'ETHUSD', binanceSymbol: 'ethusdt' },
     { symbol: 'BNBUSD', binanceSymbol: 'bnbusdt' },
@@ -24,47 +20,45 @@ const watchlistItems = [
 
   const trackedSymbols = watchlistItems.map(item => item.binanceSymbol);
 
-   const [livePrices, setLivePrices] = useState({});
-   const [currentSymbol, setCurrentSymbol] = useState(selectedSymbolRef.current);
-   const [priceChanges, setPriceChanges] = useState({});
-   const [isTradeOpen, setIsTradeOpen] = useState(false);
-   const [toastVisible, setToastVisible] = useState(false);
+  const [livePrices, setLivePrices] = useState({});
+  const [currentSymbol, setCurrentSymbol] = useState(selectedSymbolRef.current);
+  const [priceChanges, setPriceChanges] = useState({});
+  const [isTradeOpen, setIsTradeOpen] = useState(false);
+  const [toastVisible, setToastVisible] = useState(false);
+  const [showChatBot, setShowChatBot] = useState(false);
 
+  useEffect(() => {
+    const fetchMarketData = async () => {
+      try {
+        const res = await fetch('https://api.binance.com/api/v3/ticker/24hr');
+        const data = await res.json();
 
-   useEffect(() => {
-      
-        const fetchMarketData = async () => {
-          try {
-            const res = await fetch('https://api.binance.com/api/v3/ticker/24hr');
-            const data = await res.json();
+        const prices = {};
+        const changes = {};
 
-            const prices = {};
-            const changes = {};
-
-            data.forEach(item => {
-              const symbol = item.symbol.toLowerCase();
-              if (trackedSymbols.includes(symbol)) {
-                prices[symbol] = parseFloat(item.lastPrice);
-                changes[symbol] = parseFloat(item.priceChangePercent);
-              }
-            });
-
-            setLivePrices(prices);
-            setPriceChanges(changes);
-          } catch (err) {
-            console.error('Failed to fetch market data:', err);
+        data.forEach(item => {
+          const symbol = item.symbol.toLowerCase();
+          if (trackedSymbols.includes(symbol)) {
+            prices[symbol] = parseFloat(item.lastPrice);
+            changes[symbol] = parseFloat(item.priceChangePercent);
           }
-        };
+        });
 
-        fetchMarketData();
-        const interval = setInterval(fetchMarketData, 10000);
-        return () => clearInterval(interval);
-   }, []);
+        setLivePrices(prices);
+        setPriceChanges(changes);
+      } catch (err) {
+        console.error('Failed to fetch market data:', err);
+      }
+    };
 
+    fetchMarketData();
+    const interval = setInterval(fetchMarketData, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
-
-    return (
-        <><main className="flex-grow flex overflow-hidden p-4">
+  return (
+    <>
+      <main className="flex-grow flex overflow-hidden p-4">
         {/* Market Overview */}
         <div className="flex-grow mr-4 flex flex-col overflow-hidden">
           <h2 className="text-2xl font-semibold mb-6 text-blue-400">Crypto Market Summary</h2>
@@ -143,17 +137,32 @@ const watchlistItems = [
           </ul>
         </aside>
       </main>
-        <TradeModal
+
+      {/* Trade Modal */}
+      <TradeModal
         isOpen={isTradeOpen}
         onClose={() => setIsTradeOpen(false)}
         onSuccess={() => setToastVisible(true)}
         symbol={currentSymbol}
-        
       />
+
+      {/* Toast Notification */}
       {toastVisible && (
         <Toast message="Trade submitted successfully!" onClose={() => setToastVisible(false)} />
       )}
-      </>
 
-    )
+      {/* Floating Chatbot Button */}
+      <button
+        className="fixed bottom-6 right-6 bg-blue-700 text-white p-3 rounded-full shadow-lg hover:bg-blue-800 z-40"
+        onClick={() => setShowChatBot(!showChatBot)}
+      >
+        <MessageCircle size={24} />
+      </button>
+
+      {/* ChatBot Component */}
+      {showChatBot && <ChatBot 
+      onSuccess={() => setToastVisible(true)}
+      onClose={() => setShowChatBot(false)} />}
+    </>
+  );
 }
