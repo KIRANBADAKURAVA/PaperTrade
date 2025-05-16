@@ -26,10 +26,15 @@ export default function ChatBot({ onClose, onSuccess }) {
         },
         body: JSON.stringify({ userQuery: input })
       });
-
+      
       const data = await res.json();
+      console.log(data)
       setMessages([...newMessages, { role: 'assistant', content: data.statusCode }]);
-      onSuccess?.();
+      const lastMessage = messages[messages.length - 1].content;
+      console.log(lastMessage)
+      if(!messages[messages.length - 1].content.includes('Account balance')){
+        onSuccess?.();
+      }
     } catch (err) {
       setMessages([...newMessages, { role: 'assistant', content: 'Error: Unable to respond right now.' }]);
     }
