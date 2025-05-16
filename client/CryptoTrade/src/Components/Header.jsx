@@ -33,7 +33,7 @@ export default function Header() {
         },
       });
 
-      if (response.ok) {
+      if (response.ok || response.status === 400) {
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('accessToken');
         dispatch(logout());
