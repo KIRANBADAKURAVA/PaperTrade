@@ -11,7 +11,7 @@ PaperTrade is a simulated trading platform designed for traders, learners, and r
 PaperTrade combines the power of data, simulation, and AI to bring you a complete trading lab in one app.
 
 -  **Market Research**: Analyze historical data, identify trends, and explore strategies.
--  **AI Decision Support**: Get intelligent trade suggestions from a custom LangChain agent powered by **Groq (LLaMA-3)**.
+-  **AI Decision Support**: Get intelligent trade suggestions from a custom agent powered by **Groq (LLaMA-3)**.
 -  **Paper Trading**: Simulate trades with no real money involved — ideal for strategy testing.
 
 All these features work together to give you a smarter, faster, and safer way to learn and improve your trading skills.
