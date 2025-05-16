@@ -22,6 +22,7 @@ export  const Tokenverification = AsyncHandler(async(req,res,next)=>{
      //console.log(user._id);
      
      req.user=user
+     req.accessToken=token
      next()
 
    } catch (error) {

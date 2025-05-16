@@ -82,6 +82,7 @@ const loginUser = AsyncHandler(async (req, res) => {
         throw new ApiError(401, "Invalid email or password");
     }
     const {accessToken,refreshToken} = await AccessandRefreshTokenGenerater(user._id)
+    console.log(accessToken);
     
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
     const account = await Account.findOne({ userId: user._id })
