@@ -36,7 +36,7 @@ const LoginPage = () => {
         ));
 
         // Navigate to home
-        navigate('/');
+        navigate('/dashboard');
       } else {
         alert(data.message || 'Login failed. Please try again.');
       }

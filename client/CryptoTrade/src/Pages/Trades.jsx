@@ -163,7 +163,7 @@ const Trades = () => {
   return (
     <div className="bg-gray-900 text-white min-h-screen p-6">
       <button
-        onClick={() => navigate('/')}
+        onClick={() => navigate('/dashboard')}
         className="mb-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
       >
         Home

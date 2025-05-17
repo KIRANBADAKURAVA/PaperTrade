@@ -37,7 +37,7 @@ export default function Header() {
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('accessToken');
         dispatch(logout());
-        navigate('/login');
+        navigate('/');
       } else {
         console.error('Logout failed');
       }
