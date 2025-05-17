@@ -7,7 +7,7 @@ import './index.css';
 import App from './App.jsx';
 import LoginPage from './Pages/LoginPage.jsx';
 import Store from './Store/Store.js';
-import SignUpPage from './Pages/SignupPage.jsx';
+import SignUpPage from './Pages/SignUpPage.jsx';
 import Trades from './Pages/Trades.jsx'; 
 
 createRoot(document.getElementById('root')).render(
