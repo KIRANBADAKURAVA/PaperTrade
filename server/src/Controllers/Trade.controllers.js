@@ -22,7 +22,12 @@ const createTrade = AsyncHandler(async (req, res) => {
     const totalCost = price * quantity;
 
     if (account.balance < totalCost) {
-      throw new ApiError(400, 'Insufficient balance');
+      return res.status(400).json(
+        new ApiResponse(400, {
+          message: 'Insufficient balance',
+        }, 'Insufficient balance')
+        
+      );    
     }
 
     account.balance -= totalCost;
@@ -43,7 +48,12 @@ const createTrade = AsyncHandler(async (req, res) => {
     const totalCost = price * quantity;
 
     if (account.balance < totalCost) {
-      throw new ApiError(400, 'Insufficient balance');
+      return res.status(400).json(
+        new ApiResponse(400, {
+          message: 'Insufficient balance',
+        }, 'Insufficient balance')
+        
+      );   
     }
     await Position.create({
       accountId: account._id,

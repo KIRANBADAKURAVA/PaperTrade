@@ -65,7 +65,7 @@ const TradeModal = ({ isOpen, onClose, onSuccess, symbol }) => {
     };
 
     try {
-      const response = await fetch('http://localhost:8000/api/v1/trade/create', {
+      const response = await fetch('https://papertrade6.onrender.com/api/v1/trade/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

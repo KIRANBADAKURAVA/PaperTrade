@@ -17,7 +17,7 @@ export default function ChatBot({ onClose, onSuccess }) {
 
     try {
         console.log(input)
-      const res = await fetch('http://localhost:8000/api/v1/agent/query', {
+      const res = await fetch('https://papertrade6.onrender.com/api/v1/agent/query', {
         method: 'POST',
         
         headers: {
@@ -29,7 +29,10 @@ export default function ChatBot({ onClose, onSuccess }) {
 
       const data = await res.json();
       setMessages([...newMessages, { role: 'assistant', content: data.statusCode }]);
+      console.log(data.statusCode.includes('Congratulations') || data.statusCode.includes('Success'))
+      if(data.statusCode.includes('Congratulations') || data.statusCode.includes('Success') || data.statusCode.includes('Successfully')){
       onSuccess?.();
+      }
     } catch (err) {
       setMessages([...newMessages, { role: 'assistant', content: 'Error: Unable to respond right now.' }]);
     }

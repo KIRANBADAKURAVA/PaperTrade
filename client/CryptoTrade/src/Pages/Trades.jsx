@@ -20,7 +20,7 @@ const Trades = () => {
   const fetchTrades = async (status) => {
     try {
       setLoading(true);
-      const res = await fetch(`http://localhost:8000/api/v1/trade/by-status/${status}`, {
+      const res = await fetch(`https://papertrade6.onrender.com/api/v1/trade/by-status/${status}`, {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       if (res.status === 400) {
@@ -41,7 +41,7 @@ const Trades = () => {
 
   const closeTrade = async (tradeId, price) => {
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/trade/close/${tradeId}`, {
+      const res = await fetch(`https://papertrade6.onrender.com/api/v1/trade/close/${tradeId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

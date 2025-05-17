@@ -37,7 +37,7 @@ const currentPrice = (symbol) => {
   });
 };
 
-// --- Buy stock using fetched price ---
+// BUY Function
 const buyStock = async ({symbol, quantity, accessToken}) => {
 
 
@@ -68,8 +68,58 @@ const buyStock = async ({symbol, quantity, accessToken}) => {
 
   return result;
 }
+// SELL Function
+const sellStock = async ({symbol, quantity, accessToken}) => {
+
+
+  const price =  await currentPrice(symbol)
+
+  if (!price) throw new Error("Failed to get current price");
+
+  const tradeData = {
+    symbol,
+    quantity,
+    price,
+    action: "sell",
+    type: "market",
+  };
+
+  const response = await fetch("http://localhost:8000/api/v1/trade/create", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(tradeData),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) throw new Error(result.message || "Trade failed");
+
+  return result;
+}
+
+// GET Trades by Status
+const getTradesByStatus = async ({status, accessToken}) => {
+  const response = await fetch(`http://localhost:8000/api/v1/trade/by-status/${status}`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) throw new Error(result.message || "Failed to get trades");
+
+  return result;
+}
+
 
 export {
   currentPrice,
   buyStock,
+  sellStock,
+  getTradesByStatus,
 };

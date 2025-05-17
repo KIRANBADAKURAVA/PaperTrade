@@ -1,7 +1,6 @@
-import { currentPrice, buyStock } from './agent.functions.js';
+import { currentPrice, buyStock, sellStock, getTradesByStatus } from './agent.functions.js';
 import { AsyncHandler } from '../Utils/Asynchandler.js';
 import { groq, tools } from './agent.js';
-import { ApiError } from '../Utils/ApiError.js';
 import { ApiResponse } from '../Utils/ApiResponse.js';
 
 const handleQuery = AsyncHandler(async (req, res) => {
@@ -15,6 +14,8 @@ const handleQuery = AsyncHandler(async (req, res) => {
 
   const toolMap = {
     buyStock: (symbol, quantity) => buyStock(symbol, quantity, accessToken),
+    sellStock: (symbol, quantity) => sellStock(symbol, quantity, accessToken),
+    getTradesByStatus: (status) => getTradesByStatus(status, accessToken),
     currentPrice: (symbol) => currentPrice(symbol),
   };
 

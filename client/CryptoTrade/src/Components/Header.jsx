@@ -26,7 +26,7 @@ export default function Header() {
 
   const handlelogout = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/v1/user/logout', {
+      const response = await fetch('https://papertrade6.onrender.com/api/v1/user/logout', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -82,7 +82,7 @@ export default function Header() {
   useEffect(() => {
     const fetchBalance = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/v1/user/balance', {
+        const response = await fetch('https://papertrade6.onrender.com/api/v1/user/balance', {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${accessToken}`,
