@@ -41,8 +41,8 @@ const TradeModal = ({ isOpen, onClose, onSuccess, symbol }) => {
     e.preventDefault();
 
     if (!authStatus) {
-      alert('Please log in to trade');
-      navigate('/login');
+      alert('Please login to trade');
+      navigate('/');
       return;
     }
 

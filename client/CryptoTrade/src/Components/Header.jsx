@@ -190,7 +190,7 @@ export default function Header() {
                 <button
                   onClick={() => {
                     setIsMenuOpen(false);
-                    navigate('/login');
+                    navigate('/');
                   }}
                   className="block w-full text-left px-4 py-2 text-blue-600 hover:bg-gray-100 transition"
                 >
