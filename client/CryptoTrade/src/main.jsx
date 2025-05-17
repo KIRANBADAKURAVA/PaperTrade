@@ -15,8 +15,8 @@ createRoot(document.getElementById('root')).render(
     <Provider store={Store}>
       <BrowserRouter>
         <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/" element={<App />} />
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/dashboard" element={<App />} />
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/trades" element={<Trades />} />
         </Routes>
