@@ -10,7 +10,7 @@ const groq = new Groq({
 const tools = [
   {
     type: "function",
-    function: { // ✅ Nest the tool definition here
+    function: { 
       name: "buyStock",
       description: "Buy a stock from the user",
       parameters: {
@@ -48,7 +48,7 @@ const tools = [
   },
   {
     type: "function",
-    function: { // ✅ Nest the tool definition here
+    function: {
       name: "sellStock",
       description: "sell a stock from the user",
       parameters: {
