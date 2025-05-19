@@ -1,5 +1,4 @@
 import { WebSocket } from "ws";
-// --- Get current price via Binance WebSocket ---
 const currentPrice = (symbol) => {
   return new Promise((resolve, reject) => {
     console.log(symbol);
