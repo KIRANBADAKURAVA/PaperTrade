@@ -5,7 +5,7 @@
 PaperTrade is a simulated trading platform designed for traders, learners, and researchers. Whether you're exploring strategies, backtesting ideas, or testing models in a risk-free environment, PaperTrade has you covered — all powered by intelligent automation and a seamless UI.
 
 ---
-Vise=it : https://paper-trade-2dch.vercel.app/
+Visit : https://paper-trade-2dch.vercel.app/
 ##  Overview
 
 PaperTrade combines the power of data, simulation, and AI to bring you a complete trading lab in one app.
